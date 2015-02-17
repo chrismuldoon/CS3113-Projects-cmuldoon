@@ -19,7 +19,14 @@
 	   | /   \           |
 	   _/    /_
 
+
+	   P0ng!
+
+	   the x speed of the ball increaces slightly after every hit, 
+	   but the y speed remains the same so the game never becomes unplayable
 */
+
+
 
 
 
@@ -74,7 +81,7 @@ void DrawSquare(float x, float y, float radius){
 }
 
 void DrawRectangle(float x, float y, float r1, float r2){
-	GLfloat quad[] = { (x - r1), (y + r2),
+	GLfloat quad[] = {  (x - r1), (y + r2),
 						(x - r1), (y - r2),
 						(x + r1), (y - r2),
 						(x + r1), (y + r2) };
@@ -156,7 +163,7 @@ public:
 		///////CHECK FOR COLLISIONS WITH P1 
 
 		if (xVel > 0 && xPos >0){ //moving to the right
-			if ((xPos + radius) >= (p1.getX() - p1.getRX()) &&
+			if ((xPos + radius) >= (p1.getX() - p1.getRX()) &&  
 				(xPos - radius) <= (p1.getX() + p1.getRX()) &&
 				(yPos + radius) >= (p1.getY() - p1.getRY()) &&
 				(yPos - radius) <= (p1.getY() + p1.getRY()))
@@ -170,7 +177,7 @@ public:
 			else if ((xPos + radius) >= 1.33) { // point award to player2!!
 				xVel = -0.7; //reset speed, and so it twords the winner
 				xPos = 0.0;
-				yPos = 0.0;
+				yPos = 1.0 - radius;
 				winner = 2;
 			}
 
@@ -195,7 +202,7 @@ public:
 			else if ((xPos - radius) <= -1.33) {   // point award to player1!!
 				xVel =0.7; //reset speed, and so it twords the winner
 				xPos = 0.0;
-				yPos = 0.0;
+				yPos = 1.0-radius;
 				winner = 1;
 			}
 		
@@ -220,9 +227,9 @@ public:
 };
 
 Ball::Ball(bool mov){
-	xPos = 0.0;
-	yPos = 0.0;
 	radius = 0.05;
+	xPos = 0.0;
+	yPos = 1.0 - radius;
 	xVel = 0.70; //glunit/sec
 	yVel = 0.5;
 	//angle = 30.0;
@@ -245,19 +252,22 @@ void DrawSprite(GLint texture, float x, float y, float rotation, int resX = 1, i
 	GLfloat quadUVs[] = { 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0 };
 	glTexCoordPointer(2, GL_FLOAT, 0, quadUVs);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDisable(GL_TEXTURE_2D);
+
 }
 
 int main(int argc, char *argv[])
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO );
 	displayWindow = SDL_CreateWindow("Less Bugs Than Halo:MCC", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
 
+	glViewport(0, 0, 800, 600);
 	glMatrixMode(GL_PROJECTION);
 	glOrtho(-1.33, 1.33, -1.0, 1.0, -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
