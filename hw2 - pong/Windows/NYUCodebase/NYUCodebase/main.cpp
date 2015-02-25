@@ -34,6 +34,10 @@
 #include <SDL_opengl.h>
 #include <SDL_image.h>
 #include <iostream>
+#include <vector>
+
+using namespace std;
+
 
 
 SDL_Window* displayWindow;
@@ -42,6 +46,44 @@ const float UPBOUND = 1.0f;
 const float LOWBOUND = -1.0f;
 const float LEFTBOUND = -1.0f;
 const float RIGHTBOUND = 1.0f;
+
+
+void DrawText(int fontTexture, string text, float size, float spacing, float x, float y, float r, float g, float b, float a) {
+	glBindTexture(GL_TEXTURE_2D, fontTexture);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	float texture_size = 1.0 / 16.0f;
+	vector<float> vertexData;
+	vector<float> texCoordData;
+	vector<float> colorData;
+	for (int i = 0; i < text.size(); i++) {
+		float texture_x = (float)(((int)text[i]) % 16) / 16.0f;
+		float texture_y = (float)(((int)text[i]) / 16) / 16.0f;
+		colorData.insert(colorData.end(), { r, g, b, a, r, g, b, a, r, g, b, a, r, g, b, a });
+		vertexData.insert(vertexData.end(), { ((size + spacing) * i) + (-0.5f * size), 0.5f * size, ((size + spacing) * i) +
+			(-0.5f * size), -0.5f * size, ((size + spacing) * i) + (0.5f * size), -0.5f * size, ((size + spacing) * i) + (0.5f * size), 0.5f
+			* size });
+		texCoordData.insert(texCoordData.end(), { texture_x, texture_y, texture_x, texture_y + texture_size, texture_x +
+			texture_size, texture_y + texture_size, texture_x + texture_size, texture_y });
+	}
+	glColorPointer(4, GL_FLOAT, 0, colorData.data());
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	//glLoadIdentity();
+	glTranslatef(x, y, 0.0);
+	glVertexPointer(2, GL_FLOAT, 0, vertexData.data());
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glTexCoordPointer(2, GL_FLOAT, 0, texCoordData.data());
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDrawArrays(GL_QUADS, 0, text.size() * 4);
+
+	////
+	glDisable(GL_TEXTURE_2D);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
 
 
 typedef struct {
@@ -71,12 +113,26 @@ void DrawSquare(float x, float y, float radius){
 						(x + radius), (y - radius),
 						(x + radius), (y + radius) };
 
+	GLfloat triangleColors[] = { 0.95, 1.0, 0.0,
+								 0.95, 1.0, 0.0,
+								 0.95, 1.0, 0.0,
+							  	 0.95, 1.0, 0.0 };
+
+	
 
 	glLoadIdentity();
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
+
+
+	glColorPointer(3, GL_FLOAT, 0, triangleColors);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+
 	glDrawArrays(GL_QUADS, 0, 4);
-	//glEnd();
+
+	
+	glDisableClientState(GL_COLOR_ARRAY);
 
 }
 
@@ -148,7 +204,15 @@ public:
 	
 
 
-	Ball(bool mov);
+	Ball(bool mov){
+		radius = 0.05;
+		xPos = -0.1;
+		yPos = 1.0 - radius;
+		xVel = 0.70; //glunit/sec
+		yVel = 0.6;
+		//angle = 30.0;
+		moving = mov;
+	}
 
 
 	void render(){
@@ -226,17 +290,6 @@ public:
 
 };
 
-Ball::Ball(bool mov){
-	radius = 0.05;
-	xPos = 0.0;
-	yPos = 1.0 - radius;
-	xVel = 0.70; //glunit/sec
-	yVel = 0.5;
-	//angle = 30.0;
-	moving = mov;
-}
-
-
 void DrawSprite(GLint texture, float x, float y, float rotation, int resX = 1, int resY =1) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -260,9 +313,9 @@ void DrawSprite(GLint texture, float x, float y, float rotation, int resX = 1, i
 
 }
 
-int main(int argc, char *argv[])
-{
-	SDL_Init(SDL_INIT_VIDEO );
+
+void videoSetup(){
+	SDL_Init(SDL_INIT_VIDEO);
 	displayWindow = SDL_CreateWindow("Less Bugs Than Halo:MCC", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
 	SDL_GL_MakeCurrent(displayWindow, context);
@@ -271,9 +324,14 @@ int main(int argc, char *argv[])
 	glMatrixMode(GL_PROJECTION);
 	glOrtho(-1.33, 1.33, -1.0, 1.0, -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
+}
 
+
+
+int main(int argc, char *argv[])
+{
+	videoSetup();
 	bool done = false;
-	
 	SDL_Event event;
 
 	float lastFrameTicks = 0.0f;
@@ -289,6 +347,10 @@ int main(int argc, char *argv[])
 	Paddle player2(2);
 
 	GLuint winImg = LoadTexture("win.png");
+	GLuint txtImg = LoadTexture("font1.png");
+
+
+	//DrawText(txtImg, "Hello", 0.2, 0.05, 1.0, 1.0, 1.0, 1.0);
 
 
 	/////////////////////////////////////////THEGAME
@@ -346,6 +408,8 @@ int main(int argc, char *argv[])
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);		
 		
+		
+		DrawText(txtImg, "PONG", 0.20, -0.05, -0.3, -0.3, 1.0, 1.0, 1.0, 1.0);
 
 		//if score, render win sprite over correct side for a second
 		if (winTime + 0.9 > lastFrameTicks){
@@ -359,6 +423,9 @@ int main(int argc, char *argv[])
 		b.render();
 		player1.render();
 		player2.render();
+
+		
+
 	
 		SDL_GL_SwapWindow(displayWindow);
 
