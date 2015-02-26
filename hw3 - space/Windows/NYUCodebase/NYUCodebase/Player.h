@@ -2,7 +2,7 @@
 #include <SDL_opengl.h>
 #include <SDL_image.h>
 
-#define BULLETSPEED 2.0
+#define BULLETSPEED 4.0
 #define PLAYERSPEED 1.1
 #define UPPERBOUND 1.0
 #define LOWERBOUND -1.0

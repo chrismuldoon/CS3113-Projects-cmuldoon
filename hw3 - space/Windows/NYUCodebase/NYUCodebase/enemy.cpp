@@ -1,11 +1,12 @@
 #include "enemy.h"
-#define BULLETSPEED 0.30f
+#define BULLETSPEED 0.60f
 
+bool Enemy::isAlive(){ return enemyAlive; }
 
 Enemy::Enemy(float x, float y, GLuint ss){
 	xPos = x;
 	yPos = y;
-	xRadius = 0.05;
+	xRadius = 0.065;
 	yRadius = 0.05;
 	enemyAlive = true;
 
@@ -21,8 +22,6 @@ Enemy::Enemy(float x, float y, GLuint ss){
 void Enemy::reset(float x, float y){
 	xPos = x;
 	yPos = y;
-	xRadius = 0.05;
-	yRadius = 0.05;
 	enemyAlive = true;
 
 	bulletAlive = false;
@@ -76,9 +75,18 @@ void Enemy::update(float elapsed){
 	}
 
 
+} 
+
+void Enemy::move(int dir, bool downMove){
+	if (downMove)
+		yPos -= 0.13;
+	else
+		xPos += .05*(float)dir;
+
+
+
+
 }
-
-
 
 void Enemy::DrawSprite2(float u, float v, float width, float height) {
 	glEnable(GL_TEXTURE_2D);

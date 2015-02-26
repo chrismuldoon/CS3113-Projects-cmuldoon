@@ -8,8 +8,12 @@ GameClass::GameClass() {
 	Init();
 	done = false;
 	lastFrameTicks = 0.0f;
+	moveCount = 0;
+	moveDir = 1;
+	lastMoveTime = 0.0f;
 	lastShotTime = -100.0f;
 	state = STATE_MENU;
+	
 }
 void GameClass::Init() {
 	
@@ -34,14 +38,15 @@ void GameClass::Init() {
 }
 
 void GameClass::resetGame(){
+	winner = false;
 	p1->reset();
 	score = 0;
 	
 	//REset enemies in a grid
 	for (int i = 0; i < 4; i++){ //i = number of rows
-		float y = 0.8 - i*(.2);
+		float y = 0.85 - i*(.23);
 		for (int j = 0; j < 8; j++){
-			float x = -0.6 + j*(.2);
+			float x = -0.8 + j*(.25);
 			if (invaders[i * 8 + j]) invaders[i * 8 + j]->reset(x, y);
 		}
 	}
@@ -52,12 +57,13 @@ void GameClass::initGameState(){
 
 	p1 = new Player(spriteSheet);
 	score = 0;
+	randIndex = 0;
 
 	//place enemies in a grid
 	for (int i = 0; i < 4; i++){ //i = number of rows
-		float y = 0.8 - i*(.2);
+		float y = 0.85 - i*(.3);
 		for (int j = 0; j < 8; j++){
-			float x = -0.6 + j*(.2);
+			float x = -0.9 + j*(.3);
 			invaders.push_back(new Enemy(x, y, spriteSheet ));
 		}
 	}//end for loops
@@ -158,15 +164,18 @@ void GameClass::renderMenu(){
 }
 
 void GameClass::renderGO(){
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	DrawRectanglee(0.0, 0.0, 1.5, 2.0);
+	//DrawRectanglee(0.0, 0.0, 1.5, 2.0);
 
-	DrawText(textImg, "YOU DIED", 0.40, -0.16, -0.82, 0.5, 1.0, 0.0, 0.0, 1.0);
-	DrawText(textImg, "Score: ", 0.16, -0.09, -0.6, -0.001, 1.0, 1.0, 1.0, 1.0);
-	DrawText(textImg, std::to_string(score*10), 0.16, -0.09, 0.0, -0.001, 1.0, 1.0, 1.0, 1.0);
-	DrawText(textImg, "(Press esc to continue)", 0.16, -0.09, -0.77, -0.3, 0.2, 0.2, 0.2, 0.8);
+	if(!winner) DrawText(textImg, "YOU DIED",    0.40, -0.16, -0.82, 0.5, 1.0, 0.0, 0.0, 1.0);
+	else        DrawText(textImg,  "YOU WIN",    0.40, -0.16, -0.72, 0.5, 1.0, 1.0, 0.0, 1.0);
+
+
+	DrawText(textImg, "Score: ",			    0.16, -0.09, -0.48, -0.001, 1.0, 1.0, 1.0, 1.0);
+	DrawText(textImg, std::to_string(score*10),  0.16, -0.09, 0.12, -0.001, 1.0, 1.0, 1.0, 1.0);
+	DrawText(textImg, "(Press esc to continue)", 0.16, -0.09, -0.72, -0.3, 0.2, 0.2, 0.2, 0.8);
 
 
 	SDL_GL_SwapWindow(displayWindow);
@@ -243,15 +252,56 @@ void GameClass::Update(float elapsed) {  //Gameplay state
 
 
 	
-	//if (elapsed > 0.1 + lastShotTime){
-		//lastShotTime = elapsed;
-		for (size_t i = 0; i < invaders.size(); i++)
-			if (invaders[i]) invaders[i]->shoot();
-	
-	//}
+	////makes enemies shoot and reshoot when bullet dies
+	//	for (size_t i = 0; i < invaders.size(); i++)
+	//		if (invaders[i]) invaders[i]->shoot();
+
+	//makes a random enemy shoot
+	float xGar = 0.0; //garbage so i dont have to write another function
+	float yGar = 0.0; //forgive me senapi ;_;
+
+	if (lastFrameTicks > lastShotTime + 0.2){
+		randIndex = rand() % (invaders.size());
+		while (!(invaders[randIndex]->isAlive()) && !(invaders[randIndex]->bulletPos(xGar, yGar)) ){
+			randIndex = rand() % (invaders.size());
+		}
+
+
+
+
+		lastShotTime = lastFrameTicks;
+		printf("a");
+	}
+		if (invaders[randIndex]) invaders[randIndex]->shoot();
+		//printf("b");
 	
 
-	//check for gameover
+
+
+		//movement for enemies
+		if (lastFrameTicks > lastMoveTime + 0.5){
+			for (size_t i = 0; i < invaders.size(); i++){
+				if (invaders[i]) invaders[i]->move(moveDir, false);
+
+			}
+			lastMoveTime = lastFrameTicks;
+			moveCount++;
+			if (moveCount >  6){
+				moveDir *= -1;
+				moveCount = 0;
+			
+			}
+		}
+
+	//check for winner
+		winner = true;
+		for (size_t i = 0; i < invaders.size(); i++)
+			if (invaders[i] && (invaders[i]->isAlive() ) )
+			{
+				winner = false;
+				break;
+			}
+		if (winner) state = STATE_GAMEOVER;
 
 }
 

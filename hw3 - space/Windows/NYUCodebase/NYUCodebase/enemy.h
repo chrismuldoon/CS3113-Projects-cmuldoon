@@ -20,6 +20,7 @@ public:
 	void update(float elapsed);
 	void reset(float x, float y);
 	void DrawSprite2(float u, float v, float width, float height);
+	bool isAlive();
 
 private:
 	float xPos;
@@ -32,6 +33,7 @@ private:
 	float xBulletPos;
 	float yBulletPos;
 	GLuint spriteSheet;
+	
 
 };
 

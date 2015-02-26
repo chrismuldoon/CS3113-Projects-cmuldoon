@@ -40,6 +40,8 @@ public:
 private:
 	bool done;
 	float lastFrameTicks;
+	float lastMoveTime;
+	int moveCount;
 	float lastShotTime;
 	SDL_Window* displayWindow;
 	SDL_Event event;
@@ -49,6 +51,11 @@ private:
 	int score;
 	GLuint textImg;
 	GLuint spriteSheet;
+
+	int moveDir;
+	
+	bool winner;
+	size_t randIndex;
 };
 
 void DrawRectanglee(float x, float y, float r1, float r2);
