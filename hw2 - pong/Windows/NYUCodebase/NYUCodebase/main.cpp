@@ -314,6 +314,57 @@ void DrawSprite(GLint texture, float x, float y, float rotation, int resX = 1, i
 }
 
 
+void DrawSprite2(GLint texture, float u, float v, float width, float height) {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	//glTranslatef(x, y, 0.0);
+	//glRotatef(rotation, 0.0, 0.0, 1.0);
+	//float xOverY = (float)resX / resY;
+	//float yOverX = 1.0 / xOverY;
+
+	//GLfloat quad2[] = { -width , height, -width , -height ,
+	//	width , -height , width , height  };
+
+	float x, y, r1, r2;
+	x = 0.0;
+	y = 0.0;
+	r1 = 0.15;
+	r2 = 0.1;
+
+	GLfloat quad[] = { (x - r1), (y + r2),
+		(x - r1), (y - r2),
+		(x + r1), (y - r2),
+		(x + r1), (y + r2) };
+
+
+	GLfloat quadUVs[] = { u, v, u, v + height, u + width, v + height, u + width, v };
+
+	//GLfloat quad[] = { -0.4f*xOverY, 0.4f * 1, -0.4f*xOverY, -0.4f * 1, 0.4f*xOverY, -0.4f * 1, 0.4f*xOverY, 0.4f * 1 };
+	glVertexPointer(2, GL_FLOAT, 0, quad);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	//GLfloat quadUVs[] = { 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0 };
+	glTexCoordPointer(2, GL_FLOAT, 0, quadUVs);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDrawArrays(GL_QUADS, 0, 4);
+	glDisable(GL_TEXTURE_2D);
+
+}
+
+
+//void SheetSprite(float scale) {
+//	glEnable(GL_TEXTURE_2D);
+//	glBindTexture(GL_TEXTURE_2D, textureID);
+//	GLfloat quad[] = { -width * scale, height * scale, -width * scale, -height * scale,
+//		width * scale, -height * scale, width * scale, height * scale };
+//	GLfloat quadUVs[] = { u, v, u, v + height, u + width, v + height, u + width, v };
+//	// draw arrays
+//}
+
 void videoSetup(){
 	SDL_Init(SDL_INIT_VIDEO);
 	displayWindow = SDL_CreateWindow("Less Bugs Than Halo:MCC", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
@@ -346,7 +397,7 @@ int main(int argc, char *argv[])
 	Paddle player1(1);
 	Paddle player2(2);
 
-	GLuint winImg = LoadTexture("win.png");
+	GLuint winImg = LoadTexture("sprites.png");
 	GLuint txtImg = LoadTexture("font1.png");
 
 
@@ -414,7 +465,8 @@ int main(int argc, char *argv[])
 		//if score, render win sprite over correct side for a second
 		if (winTime + 0.9 > lastFrameTicks){
 			if (lastWinner == 1)  //render sprite for player1
-				DrawSprite(winImg, 0.5, 0, 0);
+				//DrawSprite2( texture,x,y, ro, sc, u, v, w, h)
+				DrawSprite2(winImg, 0/ 256.0, 115.0/ 256.0, 104.0/ 256.0, 64.0/ 256.0);
 			else if (lastWinner == 2)  //render sprite for player 2
 				DrawSprite(winImg, -0.5, 0, 0);
 		}

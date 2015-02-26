@@ -12,13 +12,15 @@
 class Player
 {
 public:
-	Player();
+	Player(GLuint ss);
 	void render();
 	void update(float elapsed, int moveDir, bool shot);
 	bool bulletPos(float &xPosition, float &yPosition);
 	bool killPlayer(float x, float y);
 	void killBullet();
+	void reset();
 
+	void Player::DrawSprite2(float u, float v, float width, float height);
 	//bool isAlive();
 
 	
@@ -33,6 +35,7 @@ private:
 	bool bulletAlive;
 	float xBulletPos;
 	float yBulletPos;
+	GLuint spriteSheet;
 	//float yPos;
 
 

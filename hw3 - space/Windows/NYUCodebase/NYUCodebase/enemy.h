@@ -10,7 +10,7 @@
 class Enemy
 {
 public:
-	Enemy(float x, float y);
+	Enemy(float x, float y, GLuint ss);
 	void render();
 	//void update();
 	void shoot();
@@ -18,6 +18,8 @@ public:
 	bool kill(float x, float y); //try to kill enemy with bullet at x,y
 	bool bulletPos(float &xPosition, float &yPosition);
 	void update(float elapsed);
+	void reset(float x, float y);
+	void DrawSprite2(float u, float v, float width, float height);
 
 private:
 	float xPos;
@@ -29,6 +31,7 @@ private:
 	bool bulletAlive;
 	float xBulletPos;
 	float yBulletPos;
+	GLuint spriteSheet;
 
 };
 
