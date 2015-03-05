@@ -1,0 +1,5 @@
+<TextureAtlas imagePath="sprites.png">
+	<SubTexture name="Illuminati-Logo.png" x="0" y="0" width="488" height="414"/>
+	<SubTexture name="dew.png" x="490" y="0" width="213" height="504"/>
+	<SubTexture name="dorito.png" x="705" y="0" width="200" height="189"/>
+</TextureAtlas>
