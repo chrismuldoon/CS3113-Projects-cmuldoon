@@ -2,72 +2,168 @@
 #include "Entity.h"
 #include "common.h"
 
-Entity::Entity(float x, float y, float xr, float yr, bool statc)
-	:xPos(x), yPos(y), xRad(xr), yRad(yr), isStatic(statc)
+
+#define YGRAVITY 2.5f
+#define X_FRIC 0.7f
+
+#define JUMP_SPEED 1.4f
+#define MAX_SPEED 0.8f
+
+#define INPUT_ACCEL 2.0f
+#define JUMP_ACCEL 0.9f
+
+Entity::Entity(float x, float y, float xr, float yr, float colorR, float colorG, float colorB, bool statc, bool destruct, bool coin)
+	:initXpos(x), initYpos(y), xRad(xr), yRad(yr), rIn(colorR), gIn(colorG), bIn(colorB), isStatic(statc), destructable(destruct), isCoin(coin)
 {
 	collidedBottom = false;
+	collidedLeft = false;
+	collidedRight = false;
+	isVisable = true;
+	score = 0;
+	r = rIn;
+	g = gIn;
+	b = bIn;
 
-
+	//destructale
+	eventTime = -50.0f;
+	eventSequence = false;
 
 	if (isStatic){
-	
+		xPos = initXpos;
+		yPos = initYpos;
 	}
 	else {
-		xVel = 0.20f;
-		yVel = 0.0f;
-		xAccel = 0.0f;
-		yAccel = 0.0f;
-		yGrav = -.90f;
-		xFric = 0.59f;
+		ResetDynamic();
+		yGrav = -YGRAVITY;
+		xFric = X_FRIC;
 	}
+}
+
+void Entity::ResetDynamic(){
+	static float dir = 1.0f;
+	xPos = initXpos;
+	yPos = initYpos;
+	xAccel = 0.0f;
+	yAccel = 0.0f;
+	yVel = 0.0f;
+	if (isCoin){
+		xVel = 0.6f*dir;
+		dir *= -1.0;
+	}	
+	else
+		xVel = 0.0f;
+		
+	
+}
+
+void Entity::destroy(bool start){
+	float currentTime = SDL_GetTicks() / 1000.0f;  
+
+	//start the sequence
+	if (start && !eventSequence){
+		eventTime = currentTime;
+		eventSequence = true;
+		r = 1.0f;
+		g = 1.0f;
+		b = 1.0f;
+		//return;
+	}
+
+	//reset
+	else if (eventSequence && currentTime > 6.0f + eventTime){
+		isVisable = true;
+		eventSequence = false;
+		r = rIn;
+		g = gIn;
+		b = bIn;
+	}
+
+	//if timer reaches, then clear platform
+	else if (eventSequence && currentTime > 3.0f + eventTime){
+		isVisable = false;	
+		b = 0.5f;
+	}
+	
+
+	
+
 }
 
 void Entity::Render(){
-	DrawRectangle(xPos, yPos, xRad, yRad);
+	if (isVisable)
+		DrawRectangle(xPos, yPos, xRad, yRad, r, g, b);
 }
+
 
 void Entity::jump(){
 	if (collidedBottom) {
-		yVel = 1.0f;
+		yVel = JUMP_SPEED;
 		collidedBottom = false;
 	}
+	else if (collidedLeft){
+		yVel = 0.86f * JUMP_SPEED;
+		xVel = 0.5f * JUMP_SPEED;
+		collidedLeft = false;
+	}
+	else if (collidedRight){
+		yVel = 0.86f * JUMP_SPEED;
+		xVel = 0.5f * -JUMP_SPEED;
+		collidedRight = false;
+	}
+
 
 }
 
-void Entity::FixedUpdate(vector<Entity*> &staticObjects){
+
+
+void Entity::FixedUpdate(vector<Entity*> &staticObjects, Entity* player){
 	//static stuff here -> nothing?
 	if (isStatic) return;
 
 	//dynamic stuff
-	
 	//acceleration, gravity, friction etc.
-	if (fabs(xVel) < .50f){ //only of the max speed is under, apply accel
-		if (collidedBottom)
+
+	if (!collidedBottom) xAccel *= 0.2f; 
+
+	//if the max speed is in the range, apply accel
+	if (-MAX_SPEED < xVel && xVel < MAX_SPEED) {
 			xVel += xAccel *  FIXED_TIMESTEP;
-		else
-			xVel += xAccel * 0.4 *  FIXED_TIMESTEP;
-		if (xVel > .50f) xVel = 0.5f;
-		if (xVel < -.50f) xVel = -0.5f;
+			if (xVel > MAX_SPEED) xVel = MAX_SPEED;
+			if (xVel < -MAX_SPEED) xVel = -MAX_SPEED;
 	}
+	//or if a & v signs dont match, apply accel
+	else if ((xVel < 0 && xAccel > 0)||(xVel > 0 && xAccel < 0)) 
+		xVel += xAccel *  FIXED_TIMESTEP;
 
+	
 
-	yVel += yAccel *  FIXED_TIMESTEP;
+	//if player is going up up apply accel
+	if (yVel >0)
+		yVel += yAccel *  FIXED_TIMESTEP;
+
 	yVel += yGrav * FIXED_TIMESTEP;
 	
 
+
+	//friction alot less if in air
+	float adjusedFric = xFric;
+	if (!collidedBottom) adjusedFric *= 0.2f;
+
 	//friction
-	if (collidedBottom && xVel > 0){ //moving right
-		xVel -= xFric * FIXED_TIMESTEP;
+	if (xVel > 0){ //moving right
+		xVel -= adjusedFric * FIXED_TIMESTEP;
 		if (xVel < 0) xVel = 0;
 	}
-	else if (collidedBottom && xVel < 0){ //moving left
-		xVel += xFric * FIXED_TIMESTEP;
+	else if (xVel < 0){ //moving left
+		xVel += adjusedFric * FIXED_TIMESTEP;
 		if (xVel > 0) xVel = 0;
 	}
 
 
 	//reset once per frame
 	collidedBottom = false;
+	collidedLeft = false;
+	collidedRight = false;
 	printf("\nfr: ");
 
 
@@ -76,13 +172,13 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects){
 	//yPos and collision/y-penetration
 	yPos += yVel * FIXED_TIMESTEP;
 
-	//use iterators????
-	//for ()
+	//use iterators???? yes!
 
 	for (staticObj = staticObjects.begin();
 		staticObj != staticObjects.end(); staticObj++)
 	{
-		if (collidesWith(*staticObj)){
+		//if (!(*staticObj)->isVisable) break;
+		if ((*staticObj)->isVisable && collidesWith(*staticObj)){
 			float pen = fabs(fabs(yPos - (*staticObj)->yPos) - yRad - (*staticObj)->yRad);
 			if (yPos < (*staticObj)->yPos) {	//if entity is above obj
 				yPos -= pen + 0.0001f;
@@ -91,9 +187,13 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects){
 			}
 			else{		//if obj was moving down
 				yPos += pen + 0.0000001f; // +0.001;
-				yVel = 0;
-				printf("up ");
+				if (isCoin) yVel = fabs(yVel);
+				else yVel = 0;
+				printf("\\/ ");
 				collidedBottom = true;
+				if ((*staticObj)->destructable)
+					(*staticObj)->destroy(true);
+				
 
 			}
 		}//end if
@@ -109,26 +209,74 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects){
 	for (staticObj = staticObjects.begin();
 		staticObj != staticObjects.end(); staticObj++)
 	{
-		if (collidesWith(*staticObj)){
+	  //if (!(*staticObj)->isVisable) 
+		if ((*staticObj)->isVisable && collidesWith(*staticObj)) {
 			float pen = fabs(fabs(xPos - (*staticObj)->xPos) - xRad - (*staticObj)->xRad);
 			if (xPos < (*staticObj)->xPos) {	//if obj was moving right
-				xPos -= pen + 0.0001f;
+				xPos -= pen + 0.0000001f;
 				xVel = 0;
-				printf("left ");
+				collidedRight = true;
+				printf("-->");
 			}
 			else{		//if obj was moving left
-				xPos += pen + 0.0001f;
+				xPos += pen + 0.0000001f;
 				xVel = 0;
-				printf("right ");
+				collidedLeft = true;
+				printf("<--");
 			}
 		}//end if
-		
+
+		//move later to dynamic looop
+		if ((*staticObj)->destructable)
+			(*staticObj)->destroy(false);
+
 	}//end for
+	
+
+	//if ur a coin
+	if (isCoin && player)
+		if (collidesWith(player)){
+			player->score++;
+			ResetDynamic();
+		}
+
+	//if fall below screen
+	if (yPos < -1.5f){
+		ResetDynamic();
+		score = 0;
+	}
 
 	//end collision stuf
 
-
+	//move later
 	
+	
+}
+
+
+void Entity::playerInput(){
+	
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+	//extra lift if holding space
+	if (keys[SDL_SCANCODE_SPACE])
+		yAccel = JUMP_ACCEL;
+	else yAccel = 0.0f;
+
+	//x-movement
+	if (keys[SDL_SCANCODE_LEFT]) {
+		// go left!
+		xAccel = -INPUT_ACCEL;
+	}
+	else if (keys[SDL_SCANCODE_RIGHT]) {
+		// go right!
+		xAccel = INPUT_ACCEL;
+	}
+	else {
+		xAccel = 0;
+	}
+
+
 }
 
 bool Entity::collidesWith(Entity *entity){

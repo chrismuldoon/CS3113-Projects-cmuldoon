@@ -28,16 +28,30 @@ void GameClass::Init() {
 
 	//other stuff
 	textImg = LoadTexture("font1.png");
-	player = new Entity(0.3f, 0.7f, 0.05f, 0.1f);
+	player = new Entity(0.3f, 0.3f, 0.07f, 0.09f);
 	buildLevel();
 }
 
 void GameClass::buildLevel(){
-	staticObjects.push_back(new Entity(0.30f, -0.60f, 0.5f, 0.5f, true));
-	staticObjects.push_back(new Entity(-0.310f, -0.3520f, 0.1f, 0.1f, true));
-	staticObjects.push_back(new Entity(0.910f, -0.3520f, 0.1f, 0.1f, true));
-	staticObjects.push_back(new Entity(0.310f, 0.1520f, 0.1f, 0.1f, true));
+								//	  (  x  ,     y , xRad , yRad,  r,   g,   b,    static?, destructable?, coin?)
+	//staticObjects.push_back(new Entity(0.30f, -0.880f, 01.3f, 0.1f, 0.0f, 1.0f, 0.0f, true));
+	staticObjects.push_back(new Entity(1.250f, 0.0f, 0.05f, 0.950f, 0.0f, 1.0f, 1.0f, true));
+	staticObjects.push_back(new Entity(-1.250f, 0.0f, 0.05f, 0.950f, 0.0f, 1.0f, 1.0f, true));
+	staticObjects.push_back(new Entity(0.850f, 0.05f, 0.05f, 0.60f, 0.0f, 1.0f, 1.0f, true));
+	
+	//boxes that disapear
+	staticObjects.push_back(new Entity(-0.310f, -0.3520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.710f, -0.3520f, 0.1f,  0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.310f, 0.1520f, 0.1f, 0.1f,   0.7f, 0.7f, 0.9f, true, true));
 
+	staticObjects.push_back(new Entity(-0.80f, 0.5520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.310f, -0.880f, 0.3f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.70f, 0.1520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+
+
+
+	coins.push_back(        new Entity(1.010f, 0.8520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
+	coins.push_back(        new Entity(0.010f, 0.9520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
 
 
 }
@@ -50,7 +64,6 @@ void GameClass::Render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	// render stuff
 
-	DrawText(textImg, "Hello World", 0.2f, -0.1f, -0.9f, 0.5f, 1.0, 1.0, 1.0, 1.0);
 	
 
 	player->Render();
@@ -58,6 +71,16 @@ void GameClass::Render() {
 	for (size_t i = 0; i < staticObjects.size(); i++){
 		staticObjects[i]->Render();
 	}
+
+	for (size_t i = 0; i < coins.size(); i++){
+		coins[i]->Render();
+	}
+
+	//DrawText(textImg, "Hellkk", 0.2f, -0.1f, -0.9f, 0.5f, 1.0, 1.0, 1.0, 1.0);
+	DrawText(textImg, "Score:", 0.10, -0.06, 0.71, 0.9, 1.0, 1.0, 1.0, 1.0);
+	DrawText(textImg, std::to_string(player->score * 10), 0.10, -0.06, 1.05, 0.9, 1.0, 1.0, 1.0, 1.0);
+
+
 
 	SDL_GL_SwapWindow(displayWindow);
 	
@@ -112,21 +135,10 @@ void GameClass::FixedUpdate(){
 
 	playerInput(player);
 	player->FixedUpdate(staticObjects);
+	for (size_t i = 0; i < coins.size(); i++)
+		coins[i]->FixedUpdate(staticObjects, player);
 }
 
 void GameClass::playerInput(Entity* player){
-	const Uint8 *keys = SDL_GetKeyboardState(NULL);
-	if (keys[SDL_SCANCODE_LEFT]) {
-		// go left!
-		
-		player->xAccel = -3.0;
-	}
-	else if (keys[SDL_SCANCODE_RIGHT]) {
-		// go right!
-		player->xAccel = 3.0;
-	}
-	else {
-		player->xAccel = 0;
-	
-	}
+	player->playerInput();
 }

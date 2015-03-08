@@ -37,5 +37,5 @@ private:
 	Entity* player;
 	//Entity* box;
 	vector<Entity*> staticObjects;
-
+	vector<Entity*> coins;
 };

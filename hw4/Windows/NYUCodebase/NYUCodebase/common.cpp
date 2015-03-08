@@ -1,17 +1,26 @@
 #pragma once
 #include "common.h"
 
-void DrawRectangle(float x, float y, float r1, float r2){
+void DrawRectangle(float x, float y, float r1, float r2, float r, float g, float b){
 	GLfloat quad[] = { (x - r1), (y + r2),
 		(x - r1), (y - r2),
 		(x + r1), (y - r2),
 		(x + r1), (y + r2) };
 
+	GLfloat colors[] = {    r, g, b,
+							r, g, b,
+							r, g, b,
+							r, g, b, };
+
 	glLoadIdentity();
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glColorPointer(3, GL_FLOAT, 0, colors);
+	glEnableClientState(GL_COLOR_ARRAY);
+
 	glDrawArrays(GL_QUADS, 0, 4);
-	//glEnd();
+	glDisableClientState(GL_COLOR_ARRAY);
 
 }
 

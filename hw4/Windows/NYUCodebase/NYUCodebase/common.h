@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void DrawRectangle(float x, float y, float r1, float r2);
+void DrawRectangle(float x, float y, float r1, float r2, float r, float g, float b);
 
 GLuint LoadTexture(const char *image_path);
 
