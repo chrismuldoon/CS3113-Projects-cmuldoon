@@ -47,7 +47,7 @@ void Entity::ResetDynamic(){
 	yAccel = 0.0f;
 	yVel = 0.0f;
 	if (isCoin){
-		xVel = 0.6f*dir;
+		xVel = 1.5f*dir;
 		dir *= -1.0;
 	}	
 	else
@@ -149,6 +149,9 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, Entity* player){
 	float adjusedFric = xFric;
 	if (!collidedBottom) adjusedFric *= 0.2f;
 
+
+	//xVel = lerp(xVel, 0.0f, FIXED_TIMESTEP * xFric);
+
 	//friction
 	if (xVel > 0){ //moving right
 		xVel -= adjusedFric * FIXED_TIMESTEP;
@@ -166,7 +169,11 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, Entity* player){
 	collidedRight = false;
 	printf("\nfr: ");
 
-
+	//move in x direction
+	//check for collision with an object
+	//if collision, adjust position the proper direction
+	//repeat for all object
+	//then check x direcion
 
 	vector<Entity*>::iterator staticObj;
 	//yPos and collision/y-penetration
@@ -187,7 +194,7 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, Entity* player){
 			}
 			else{		//if obj was moving down
 				yPos += pen + 0.0000001f; // +0.001;
-				if (isCoin) yVel = fabs(yVel);
+				if (isCoin) yVel *= -0.75; //coins bounce
 				else yVel = 0;
 				printf("\\/ ");
 				collidedBottom = true;
@@ -214,13 +221,15 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, Entity* player){
 			float pen = fabs(fabs(xPos - (*staticObj)->xPos) - xRad - (*staticObj)->xRad);
 			if (xPos < (*staticObj)->xPos) {	//if obj was moving right
 				xPos -= pen + 0.0000001f;
-				xVel = 0;
+				if (isCoin) xVel *= -1.0; //coins bounce
+				else xVel = 0;
 				collidedRight = true;
 				printf("-->");
 			}
 			else{		//if obj was moving left
 				xPos += pen + 0.0000001f;
-				xVel = 0;
+				if (isCoin) xVel *= -1.0; //coins bounce
+				else xVel = 0;
 				collidedLeft = true;
 				printf("<--");
 			}
@@ -233,8 +242,8 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, Entity* player){
 	}//end for
 	
 
-	//if ur a coin
-	if (isCoin && player)
+	//if ur a coin, check collision with player
+	if (isCoin &&isVisable && player)
 		if (collidesWith(player)){
 			player->score++;
 			ResetDynamic();
@@ -286,4 +295,8 @@ bool Entity::collidesWith(Entity *entity){
 		(yPos - yRad ) < (entity->yPos + entity->yRad))
 	{	return true; }
 	return false;
+}
+
+float lerp(float v0, float v1, float t) {
+	return (1.0 - t)*v0 + t*v1;
 }

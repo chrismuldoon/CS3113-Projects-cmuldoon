@@ -1,19 +1,18 @@
-﻿Build started 3/8/2015 4:40:01 AM.
+﻿Build started 3/12/2015 4:18:16 PM.
      1>Project "C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw4\Windows\NYUCodebase\NYUCodebase\NYUCodebase.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\SDL2\include /IC:\SDL2_image\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GameClass.cpp
          GameClass.cpp
-     1>c:\users\chris\documents\cs3113\cs3113-projects-cmuldoon\hw4\windows\nyucodebase\nyucodebase\gameclass.cpp(80): warning C4305: 'argument' : truncation from 'double' to 'float'
-     1>c:\users\chris\documents\cs3113\cs3113-projects-cmuldoon\hw4\windows\nyucodebase\nyucodebase\gameclass.cpp(81): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\chris\documents\cs3113\cs3113-projects-cmuldoon\hw4\windows\nyucodebase\nyucodebase\gameclass.cpp(130): warning C4305: 'argument' : truncation from 'double' to 'float'
+     1>c:\users\chris\documents\cs3113\cs3113-projects-cmuldoon\hw4\windows\nyucodebase\nyucodebase\gameclass.cpp(131): warning C4305: 'argument' : truncation from 'double' to 'float'
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw4\Windows\NYUCodebase\Debug\NYUCodebase.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\SDL2\lib\x86 /LIBPATH:C:\SDL2_image\lib\x86 SDL2.lib SDL2main.lib SDL2_image.lib OpenGL32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw4\Windows\NYUCodebase\Debug\NYUCodebase.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw4\Windows\NYUCodebase\Debug\NYUCodebase.lib" /MACHINE:X86 Debug\common.obj
          Debug\Entity.obj
          Debug\GameClass.obj
          Debug\main.obj
-     1>MSVCRTD.lib(cinitexe.obj) : warning LNK4098: defaultlib 'msvcrt.lib' conflicts with use of other libs; use /NODEFAULTLIB:library
          NYUCodebase.vcxproj -> C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw4\Windows\NYUCodebase\Debug\NYUCodebase.exe
      1>Done Building Project "C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw4\Windows\NYUCodebase\NYUCodebase\NYUCodebase.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.82
+Time Elapsed 00:00:03.26

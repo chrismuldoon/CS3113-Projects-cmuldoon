@@ -24,6 +24,7 @@ public:
 	void playerInput(Entity* player);
 
 	void buildLevel();
+	void buildLevel2();
 
 private:
 	bool done;

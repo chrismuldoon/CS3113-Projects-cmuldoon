@@ -33,6 +33,47 @@ void GameClass::Init() {
 }
 
 void GameClass::buildLevel(){
+	//	  (  x  ,     y , xRad , yRad,  r,   g,   b,    static?, destructable?, coin?)
+	//staticObjects.push_back(new Entity(0.30f, -0.880f, 01.3f, 0.1f, 0.0f, 1.0f, 0.0f, true));
+	staticObjects.push_back(new Entity(1.250f, 0.0f, 0.05f, 0.950f, 0.0f, 1.0f, 1.0f, true));
+	staticObjects.push_back(new Entity(-1.250f, 0.0f, 0.05f, 0.950f, 0.0f, 1.0f, 1.0f, true));
+	//staticObjects.push_back(new Entity(0.850f, 0.05f, 0.05f, 0.60f, 0.0f, 1.0f, 1.0f, true));
+
+	//boxes that disapear
+	//staticObjects.push_back(new Entity(-0.310f, -0.3520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	//staticObjects.push_back(new Entity(0.710f, -0.3520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	//staticObjects.push_back(new Entity(0.310f, 0.1520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+
+	//staticObjects.push_back(new Entity(-0.80f, 0.5520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	//staticObjects.push_back(new Entity(-0.70f, 0.1520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+
+	staticObjects.push_back(new Entity(0.0f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.2f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.4f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.6f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.8f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	
+	staticObjects.push_back(new Entity(-0.2f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.4f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.6f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.8f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+
+
+	coins.push_back(new Entity(1.010f, 0.8520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
+	coins.push_back(new Entity(0.010f, 0.9520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
+	coins.push_back(new Entity(-1.010f, 0.8520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
+	coins.push_back(new Entity(0.510f, 0.9520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
+	coins.push_back(new Entity(-0.510f, 0.8520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
+	
+	coins[1]->isVisable = false;
+	coins[2]->isVisable = false;
+	coins[3]->isVisable = false;
+	coins[4]->isVisable = false;
+}
+
+
+
+void GameClass::buildLevel2(){
 								//	  (  x  ,     y , xRad , yRad,  r,   g,   b,    static?, destructable?, coin?)
 	//staticObjects.push_back(new Entity(0.30f, -0.880f, 01.3f, 0.1f, 0.0f, 1.0f, 0.0f, true));
 	staticObjects.push_back(new Entity(1.250f, 0.0f, 0.05f, 0.950f, 0.0f, 1.0f, 1.0f, true));
@@ -45,9 +86,18 @@ void GameClass::buildLevel(){
 	staticObjects.push_back(new Entity(0.310f, 0.1520f, 0.1f, 0.1f,   0.7f, 0.7f, 0.9f, true, true));
 
 	staticObjects.push_back(new Entity(-0.80f, 0.5520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
-	staticObjects.push_back(new Entity(0.310f, -0.880f, 0.3f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
 	staticObjects.push_back(new Entity(-0.70f, 0.1520f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
 
+	staticObjects.push_back(new Entity(0.0f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.2f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.4f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.6f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(0.8f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	//staticObjects.push_back(new Entity(1.0f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.2f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.4f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.6f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
+	staticObjects.push_back(new Entity(-0.8f, -0.880f, 0.1f, 0.1f, 0.7f, 0.7f, 0.9f, true, true));
 
 
 	coins.push_back(        new Entity(1.010f, 0.8520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
@@ -115,6 +165,7 @@ bool GameClass::UpdateAndRender() {
 	while (fixedElapsed >= FIXED_TIMESTEP) {
 		fixedElapsed -= FIXED_TIMESTEP;
 		FixedUpdate();
+		Render();
 	}
 	timeLeftOver = fixedElapsed;
 		Update(elapsed);
@@ -123,7 +174,7 @@ bool GameClass::UpdateAndRender() {
 
 
 	Update(elapsed);
-	Render();
+	
 	return done;
 }
 
@@ -132,11 +183,29 @@ void GameClass::FixedUpdate(){
 	//static int counter = 0;
 	//if(!(counter % 60)) printf("a");
 	//counter++;
+	if (player->score == 0){
+		for (size_t i = 1; i < coins.size(); i++)
+			coins[i]->isVisable = false;
+	}
+
+	else if (player->score >= 6){
+		for (size_t i = 0; i < coins.size(); i++)
+			coins[i]->isVisable = true;
+	}
+
+	else if (player->score >= 3){
+		for (size_t i = 3; i < coins.size(); i++)
+			coins[i]->isVisable = true;
+	}
+
+
 
 	playerInput(player);
 	player->FixedUpdate(staticObjects);
 	for (size_t i = 0; i < coins.size(); i++)
 		coins[i]->FixedUpdate(staticObjects, player);
+
+
 }
 
 void GameClass::playerInput(Entity* player){
