@@ -65,6 +65,8 @@ void GameClass::buildLevel(){
 	coins.push_back(new Entity(0.510f, 0.9520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
 	coins.push_back(new Entity(-0.510f, 0.8520f, 0.05f, 0.05f, 1.0f, 0.90f, 0.0f, false, false, true));
 	
+	player->isVisable = true;
+	coins[0]->isVisable = true;
 	coins[1]->isVisable = false;
 	coins[2]->isVisable = false;
 	coins[3]->isVisable = false;

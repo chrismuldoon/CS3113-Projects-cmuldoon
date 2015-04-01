@@ -185,7 +185,7 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, Entity* player){
 		staticObj != staticObjects.end(); staticObj++)
 	{
 		//if (!(*staticObj)->isVisable) break;
-		if ((*staticObj)->isVisable && collidesWith(*staticObj)){
+		if (isVisable&& (*staticObj)->isVisable && collidesWith(*staticObj)){
 			float pen = fabs(fabs(yPos - (*staticObj)->yPos) - yRad - (*staticObj)->yRad);
 			if (yPos < (*staticObj)->yPos) {	//if entity is above obj
 				yPos -= pen + 0.0001f;
