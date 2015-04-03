@@ -34,12 +34,12 @@ void GameClass::Init() {
 	spriteImg = LoadTexture("arne_sprites.png");
 
 	unsigned char levelData1[LEVEL_HEIGHT][LEVEL_WIDTH] =
-	{	{ 0, 1, 12, 12, 12, 12, 2, 3 }, 
-		{ 12, 12, 12, 12, 12, 12, 12, 12 },
-		{ 12, 12, 12, 12, 12, 12, 12, 12 }, 
-		{ 12, 12, 12, 12, 12, 12, 12, 12 },
-		{ 12, 12, 12, 12, 12, 12, 12, 12 },
-		{ 1, 1, 1, 1, 1, 1, 1, 1 }
+	{	{  3,  3,  3,  3,  3,  3,  3,  3 }, 
+		{  3, 12, 12, 12, 12, 12, 12,  3 },
+		{  3, 12, 12, 12, 12, 12, 12,  3 }, 
+		{  3, 12, 12, 12, 12, 12, 12,  3 },
+		{  3,  1,  1,  1,  1,  1,  1,  3 },
+		{  3,  3,  3,  3,  3,  3,  3,  3 }
 	
 	
 	
@@ -48,8 +48,16 @@ void GameClass::Init() {
 	memcpy(levelData, levelData1, LEVEL_HEIGHT*LEVEL_WIDTH);
 
 
-	player = new Entity(0.3f, 0.3f, 0.07f, 0.09f);
+	player = new Entity(1.5f, -0.7f, 0.04f, 0.04f);
 
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	
+	music = Mix_LoadMUS("murder.mp3");
+	
+	//someSound = Mix_LoadWAV("hangout.wav");
+
+	//Mix_PlayChannel(-1, someSound, 0);
+	Mix_PlayMusic(music, -1);
 
 }
 //defines for sprite sheet
@@ -85,8 +93,8 @@ void GameClass::renderLevel(){
 		}
 	}
 
-	glLoadIdentity();
-	glTranslatef(-TILE_SIZE * LEVEL_WIDTH / 2, TILE_SIZE * LEVEL_HEIGHT / 2, 0.0f);
+	//glLoadIdentity();
+	//glTranslatef(-TILE_SIZE * LEVEL_WIDTH / 2, TILE_SIZE * LEVEL_HEIGHT / 2, 0.0f);
 
 
 	glVertexPointer(2, GL_FLOAT, 0, vertexData.data());
@@ -102,6 +110,9 @@ void GameClass::renderLevel(){
 }
 
 GameClass::~GameClass() {
+	//SDL_Quit();
+	//Mix_FreeChunk(someSound);
+	Mix_FreeMusic(music);
 	SDL_Quit();
 }
 void GameClass::Render() {
@@ -113,6 +124,11 @@ void GameClass::Render() {
 	//DrawRectangle(0.0f, -0.2f, 0.2f, 0.2f);
 
 	DrawSpriteSheetSprite(spriteImg, 80, 16, 8);
+
+	//scrolling
+	glLoadIdentity();
+	glTranslatef(player->xPos*-1.0, player->yPos*-1.0, 0.0);
+
 	renderLevel();
 
 	player->Render();
@@ -125,6 +141,16 @@ void GameClass::Update(float elapsed) {
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			done = true;
+		}
+		else if (event.type == SDL_KEYDOWN) {
+			if (event.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+				// DO AN ACTION WHEN SPACE IS PRESSED!
+				//if (!player) break;
+				printf("%i", player->collidedBottom);
+				player->jump();
+			}
+			//other keys...
+
 		}
 	}
 }
@@ -160,6 +186,6 @@ void GameClass::FixedUpdate(){
 	//counter++;
 
 
-	//playerInput(player);
+	player->playerInput();
 	player->FixedUpdate(staticObjects, levelData);
 }

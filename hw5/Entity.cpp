@@ -3,14 +3,24 @@
 #include "common.h"
 
 
-#define YGRAVITY 2.5f
+#define YGRAVITY 1.0f //2.5
 #define X_FRIC 0.7f
 
-#define JUMP_SPEED 1.4f
+#define JUMP_SPEED .4f //1.4
 #define MAX_SPEED 0.8f
 
 #define INPUT_ACCEL 2.0f
 #define JUMP_ACCEL 0.9f
+
+bool isSolid(int index){
+	//all but 12 are solid
+	
+	if ((int)index = 12){ 
+		//printf("TWELVE"); 
+		return false; }
+	//printf("%i", index);
+	return true;
+}
 
 Entity::Entity(float x, float y, float xr, float yr, float colorR, float colorG, float colorB, bool statc, bool destruct, bool coin)
 	:initXpos(x), initYpos(y), xRad(xr), yRad(yr), rIn(colorR), gIn(colorG), bIn(colorB), isStatic(statc), destructable(destruct), isCoin(coin)
@@ -111,6 +121,11 @@ void Entity::jump(){
 		collidedRight = false;
 	}
 
+	else //testing only
+	{
+		yVel = JUMP_SPEED;
+	}
+
 
 }
 
@@ -181,66 +196,51 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, unsigned char level[][L
 
 	//use iterators???? yes!
 
-	for (staticObj = staticObjects.begin();
-		staticObj != staticObjects.end(); staticObj++)
-	{
-		//if (!(*staticObj)->isVisable) break;
-		if (isVisable&& (*staticObj)->isVisable && collidesWith(*staticObj)){
-			float pen = fabs(fabs(yPos - (*staticObj)->yPos) - yRad - (*staticObj)->yRad);
-			if (yPos < (*staticObj)->yPos) {	//if entity is above obj
-				yPos -= pen + 0.0001f;
-				yVel = 0;
-				printf("down");
-			}
-			else{		//if obj was moving down
-				yPos += pen + 0.0000001f; // +0.001;
-				if (isCoin) yVel *= -0.75; //coins bounce
-				else yVel = 0;
-				printf("\\/ ");
-				collidedBottom = true;
-				if ((*staticObj)->destructable)
-					(*staticObj)->destroy(true);
-				
+	//check bottom point
+	float worldBottom = yPos - yRad;
+	int gridX = -1;
+	int gridY = -1;
+	
+	//printf("%i,%i: %i ", gridY, gridX, level[gridY][gridX]);
 
-			}
-		}//end if
+	//bottom!
+	worldToTileCoordinates(xPos, yPos - yRad, &gridX, &gridY);
+	if (level[gridY][gridX] != 12) { 
+		//float pen = fabs(gridY*TILE_SIZE - (yPos - yRad)); //gridY*TILE_SIZE  is top of tile
+		yPos = -gridY*TILE_SIZE + yRad + 0.0000001f;
+		printf(" not twelze "); 
+		yVel = 0.0f;
+	
+	}
 
-	}//end for
+	//top!
+	worldToTileCoordinates(xPos, yPos + yRad, &gridX, &gridY);
+	if (level[gridY][gridX] != 12) {
+		printf(" not twelze ");
+		yVel = -0.90f;
 
+	}
 
 
-	//xPos and collions
 	xPos += xVel * FIXED_TIMESTEP;
 
+	//left!
+	worldToTileCoordinates(xPos - xRad, yPos, &gridX, &gridY);
+	if (level[gridY][gridX] != 12) {
+		printf(" not twelze ");
+		xVel = 0.90f;
 
-	for (staticObj = staticObjects.begin();
-		staticObj != staticObjects.end(); staticObj++)
-	{
-	  //if (!(*staticObj)->isVisable) 
-		if ((*staticObj)->isVisable && collidesWith(*staticObj)) {
-			float pen = fabs(fabs(xPos - (*staticObj)->xPos) - xRad - (*staticObj)->xRad);
-			if (xPos < (*staticObj)->xPos) {	//if obj was moving right
-				xPos -= pen + 0.0000001f;
-				if (isCoin) xVel *= -1.0; //coins bounce
-				else xVel = 0;
-				collidedRight = true;
-				printf("-->");
-			}
-			else{		//if obj was moving left
-				xPos += pen + 0.0000001f;
-				if (isCoin) xVel *= -1.0; //coins bounce
-				else xVel = 0;
-				collidedLeft = true;
-				printf("<--");
-			}
-		}//end if
+	}
 
-		//move later to dynamic looop
-		if ((*staticObj)->destructable)
-			(*staticObj)->destroy(false);
+	//right!
+	worldToTileCoordinates(xPos + xRad, yPos, &gridX, &gridY);
+	if (level[gridY][gridX] != 12) {
+		printf(" not twelze ");
+		xVel = -0.90f;
 
-	}//end for
-	
+	}
+
+
 
 	//if ur a coin, check collision with player
 	if (isCoin &&isVisable && player)
@@ -250,7 +250,7 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, unsigned char level[][L
 		}
 
 	//if fall below screen
-	if (yPos < -1.5f){
+	if (yPos < -2.5f){
 		ResetDynamic();
 		score = 0;
 	}

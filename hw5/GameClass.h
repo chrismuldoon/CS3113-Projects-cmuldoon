@@ -10,6 +10,8 @@
 #include "common.h"
 #include "entity.h"
 
+#include <SDL_mixer.h>
+
 //define for level
 
 
@@ -40,4 +42,7 @@ private:
 	Entity* player;
 	//Entity* box;
 	vector<Entity*> staticObjects;
+
+	Mix_Music *music;
+	Mix_Chunk *someSound;
 };

@@ -38,7 +38,10 @@ void DrawSprite2(GLint texture, float u, float v, float width, float height) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glMatrixMode(GL_MODELVIEW);
+
 	glLoadIdentity();
+
+
 	//glTranslatef(x, y, 0.0);
 	//glRotatef(rotation, 0.0, 0.0, 1.0);
 	//float xOverY = (float)resX / resY;
@@ -82,7 +85,9 @@ void DrawRectangle(float x, float y, float r1, float r2){
 		(x + r1), (y - r2),
 		(x + r1), (y + r2) };
 
-	glLoadIdentity();
+	//glLoadIdentity();
+	//handled above
+
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDrawArrays(GL_QUADS, 0, 4);
