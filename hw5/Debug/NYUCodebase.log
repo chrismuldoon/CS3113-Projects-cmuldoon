@@ -1,9 +1,14 @@
-﻿Build started 4/3/2015 4:54:24 AM.
+﻿Build started 4/3/2015 10:36:57 PM.
      1>Project "C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw5\NYUCodebase.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\SDL2_mixer-2.0.0\include" /IC:\SDL2\include /I"C:\SDL2_mixer-2.0.0\include" /IC:\SDL2_image\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Entity.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\SDL2_mixer-2.0.0\include" /IC:\SDL2\include /I"C:\SDL2_mixer-2.0.0\include" /IC:\SDL2_image\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Entity.cpp GameClass.cpp main.cpp
+         GameClass.cpp
+     1>c:\users\chris\documents\cs3113\cs3113-projects-cmuldoon\hw5\gameclass.cpp(136): warning C4244: 'argument' : conversion from 'double' to 'GLfloat', possible loss of data
          Entity.cpp
-     1>c:\users\chris\documents\cs3113\cs3113-projects-cmuldoon\hw5\entity.cpp(301): warning C4244: 'return' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\chris\documents\cs3113\cs3113-projects-cmuldoon\hw5\entity.cpp(337): warning C4244: 'return' : conversion from 'double' to 'float', possible loss of data
+         Generating Code...
+         Skipping... (no relevant changes detected)
+         main.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw5\Debug\NYUCodebase.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\SDL2_mixer-2.0.0\lib\x86" /LIBPATH:C:\SDL2\lib\x86 /LIBPATH:C:\SDL2_image\lib\x86 SDL2.lib SDL2main.lib SDL2_image.lib OpenGL32.lib SDL2_mixer.lib SDL2_mixer.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw5\Debug\NYUCodebase.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Chris\Documents\CS3113\CS3113-Projects-cmuldoon\hw5\Debug\NYUCodebase.lib" /MACHINE:X86 Debug\common.obj
          Debug\Entity.obj
@@ -14,4 +19,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.16
+Time Elapsed 00:00:02.39

@@ -33,26 +33,31 @@ void GameClass::Init() {
 	textImg = LoadTexture("font1.png");
 	spriteImg = LoadTexture("arne_sprites.png");
 
-	unsigned char levelData1[LEVEL_HEIGHT][LEVEL_WIDTH] =
-	{	{  3,  3,  3,  3,  3,  3,  3,  3 }, 
-		{  3, 12, 12, 12, 12, 12, 12,  3 },
-		{  3, 12, 12, 12, 12, 12, 12,  3 }, 
-		{  3, 12, 12, 12, 12, 12, 12,  3 },
-		{  3,  1,  1,  1,  1,  1,  1,  3 },
-		{  3,  3,  3,  3,  3,  3,  3,  3 }
-	
-	
-	
-	};
+	//unsigned char levelData1[LEVEL_HEIGHT][LEVEL_WIDTH] =
+	//{	{  3,  3,  3,  3,  3,  3,  3,  3 }, 
+	//	{  3, 12, 12, 12, 12, 12, 12,  3 },
+	//	{  3, 12, 12, 12, 12, 12, 12,  3 }, 
+	//	{  3, 12, 12, 12, 12, 12, 12,  3 },
+	//	{  3,  1,  1,  1,  1,  1,  1,  3 },
+	//	{  3,  3,  3,  3,  3,  3,  3,  3 }
+	//
+	//
+	//
+	//};
 
-	memcpy(levelData, levelData1, LEVEL_HEIGHT*LEVEL_WIDTH);
+	//memcpy(levelData, levelData1, LEVEL_HEIGHT*LEVEL_WIDTH);
 
-
-	player = new Entity(1.5f, -0.7f, 0.04f, 0.04f);
+	ReadTileMapFile();
 
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-	
 	music = Mix_LoadMUS("murder.mp3");
+
+	player = new Entity(1.5f, -0.7f, 0.055f, 0.0625f);
+	player->jumpSound = Mix_LoadWAV("smw_jump.wav");
+	player->hitSound = Mix_LoadWAV("smw_shell_ricochet.wav");
+
+	
+
 	
 	//someSound = Mix_LoadWAV("hangout.wav");
 
@@ -73,8 +78,8 @@ void GameClass::renderLevel(){
 	std::vector<float> vertexData;
 	std::vector<float> texCoordData;
 
-	for (int y = 0; y < LEVEL_HEIGHT; y++) {
-		for (int x = 0; x < LEVEL_WIDTH; x++) {
+	for (int y = 0; y < mapHeight; y++) {
+		for (int x = 0; x < mapWidth; x++) {
 			float u = (float)(((int)levelData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
 			float v = (float)(((int)levelData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
 			float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
@@ -101,7 +106,7 @@ void GameClass::renderLevel(){
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, 0, texCoordData.data());
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDrawArrays(GL_QUADS, 0, LEVEL_HEIGHT*LEVEL_WIDTH * 4);
+	glDrawArrays(GL_QUADS, 0, mapHeight*mapWidth * 4);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisable(GL_TEXTURE_2D);
@@ -116,18 +121,19 @@ GameClass::~GameClass() {
 	SDL_Quit();
 }
 void GameClass::Render() {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.04f, 0.60f, 0.67f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	// render stuff
 
-	DrawText(textImg, "Hello World", 0.2f, -0.1f, -0.9f, 0.5f, 1.0, 1.0, 1.0, 1.0);
+	//DrawText(textImg, "Hello World", 0.2f, -0.1f, -0.9f, 0.5f, 1.0, 1.0, 1.0, 1.0);
 	//DrawRectangle(0.0f, -0.2f, 0.2f, 0.2f);
 
-	DrawSpriteSheetSprite(spriteImg, 80, 16, 8);
+	//DrawSpriteSheetSprite(spriteImg, 80, 16, 8);
 
 	//scrolling
 	glLoadIdentity();
-	glTranslatef(player->xPos*-1.0, player->yPos*-1.0, 0.0);
+	//glTranslatef(player->xPos*-1.0, player->yPos*-1.0, 0.0);
+	glTranslatef(player->xPos*-1.0, 1.0, 0.0);
 
 	renderLevel();
 
@@ -187,5 +193,124 @@ void GameClass::FixedUpdate(){
 
 
 	player->playerInput();
-	player->FixedUpdate(staticObjects, levelData);
+	player->FixedUpdate(levelData, mapHeight, mapWidth);
 }
+
+/////////////////////////////
+//file stuff
+
+void GameClass::ReadTileMapFile() {
+	std::ifstream infile("level1.txt");
+	std::string line;
+	while (std::getline(infile, line)) {
+		if (line == "[header]" && !ReadTileMapHeaderData(infile)) {
+			return;
+		}
+		else if (line == "[layer]") {
+			ReadTileMapLayerData(infile);
+		}
+		else if (line == "[ObjectLayer]") {
+			ReadTileMapEntityData(infile);
+		}
+	}
+}
+
+bool GameClass::ReadTileMapHeaderData(std::ifstream &stream) {
+	std::string line;
+	mapWidth = -1;
+	mapHeight = -1;
+	while (std::getline(stream, line)) {
+		if (line == "") { break; }
+		std::istringstream sStream(line);
+		std::string key, value;
+		std::getline(sStream, key, '=');
+		std::getline(sStream, value);
+		if (key == "width") {
+			mapWidth = atoi(value.c_str());
+		}
+		else if (key == "height"){
+			mapHeight = atoi(value.c_str());
+		}
+	}
+
+	if (mapWidth == -1 || mapHeight == -1) {
+		return false;
+	}
+	else {
+		levelData = new unsigned char*[mapHeight];
+		for (int i = 0; i < mapHeight; ++i) {
+			levelData[i] = new unsigned char[mapWidth];
+		}
+		return true;
+	}
+}
+
+bool GameClass::ReadTileMapLayerData(std::ifstream &stream) {
+	std::string line;
+	while (std::getline(stream, line)) {
+		if (line == "") { break; }
+		std::istringstream sStream(line);
+		std::string key, value;
+		std::getline(sStream, key, '=');
+		std::getline(sStream, value);
+		if (key == "data") {
+			for (int y = 0; y < mapHeight; y++) {
+				std::getline(stream, line);
+				std::istringstream lineStream(line);
+				std::string tile;
+				for (int x = 0; x < mapWidth; x++) {
+					std::getline(lineStream, tile, ',');
+					unsigned char val = (unsigned char)atoi(tile.c_str());
+					if (val > 0) {
+						// be careful, the tiles in this format are indexed from 1 not 0
+						levelData[y][x] = val - 1;
+					}
+					else {
+						levelData[y][x] = 12;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool GameClass::ReadTileMapEntityData(std::ifstream &stream) {
+	std::string line, type;
+	while (std::getline(stream, line)) {
+		if (line == "") { break; }
+		std::istringstream sStream(line);
+		std::string key, value;
+		std::getline(sStream, key, '=');
+		std::getline(sStream, value);
+		if (key == "type") {
+			type = value;
+		}
+		else if (key == "location") {
+			std::istringstream lineStream(value);
+			std::string xPosition, yPosition;
+			std::getline(lineStream, xPosition, ',');
+			std::getline(lineStream, yPosition, ',');
+			float placeX = atoi(xPosition.c_str()) / 16 * TILE_SIZE + TILE_SIZE;
+			float placeY = atoi(yPosition.c_str()) / 16 * -TILE_SIZE;
+			//BuildEntity(type, placeX, placeY);
+		}
+	}
+	return true;
+}
+
+//void GameClass::BuildEntity(std::string &type, const float &xCoord, const float &yCoord) {
+//	if (type == "PlayerOne") { // create player one and player one's weapon
+//		playerOne = Entity(xCoord, yCoord, 98, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
+//		playerOneWeapon = Entity(xCoord, yCoord, 56, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
+//	}
+//	if (type == "PlayerTwo") { // create player two and player two's weapon
+//		playerTwo = Entity(xCoord, yCoord, 99, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
+//		playerTwoWeapon = Entity(xCoord, yCoord, 40, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
+//	}
+//	if (type == "MagicButton") { // create the magic button
+//		magicButtonX = xCoord;
+//		magicButtonY = yCoord;
+//		magicButton = Entity(xCoord, yCoord, 100, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
+//	}
+//}

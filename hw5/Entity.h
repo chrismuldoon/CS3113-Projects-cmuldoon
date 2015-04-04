@@ -3,6 +3,8 @@
 #include "defines.h"
 #include <vector>
 
+#include <SDL_mixer.h>
+
 using namespace std;
 
 class Entity {
@@ -11,7 +13,7 @@ public:
 	void Update(float elapsed);
 	void Render();
 	bool collidesWith(Entity *entity);
-	void FixedUpdate(vector<Entity*> &staticObjects, unsigned char level[][LEVEL_WIDTH], Entity* player = NULL);
+	void FixedUpdate(unsigned char **level, int mapHeight, int mapWidth, Entity* player = NULL);
 	void jump();
 	void ResetDynamic();
 	void playerInput();
@@ -53,6 +55,9 @@ public:
 	bool collidedRight;
 
 	int score;
+
+	Mix_Chunk *jumpSound;
+	Mix_Chunk *hitSound;
 };
 
 float lerp(float v0, float v1, float t);

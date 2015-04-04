@@ -4,9 +4,10 @@
 
 //define for level
 
-#define LEVEL_HEIGHT 6
-#define LEVEL_WIDTH 8
-#define TILE_SIZE 0.333f
+//#define LEVEL_HEIGHT 6
+//#define LEVEL_WIDTH 8
+//#define TILE_SIZE 0.333f
+#define TILE_SIZE 0.125f
 
 
 #define WORLD_OFFSET_X 0.0f

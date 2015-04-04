@@ -12,6 +12,13 @@
 
 #include <SDL_mixer.h>
 
+
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <sstream>
+
+
 //define for level
 
 
@@ -28,6 +35,10 @@ public:
 	void Update(float elapsed);
 	void FixedUpdate();
 
+	void ReadTileMapFile();
+	bool ReadTileMapHeaderData(std::ifstream &stream);
+	bool ReadTileMapLayerData(std::ifstream &stream);
+	bool ReadTileMapEntityData(std::ifstream &stream);
 
 
 private:
@@ -38,11 +49,15 @@ private:
 	SDL_Event event;
 	GLuint textImg;
 	GLuint spriteImg;
-	unsigned char levelData[LEVEL_HEIGHT][LEVEL_WIDTH];
+	//unsigned char levelData[LEVEL_HEIGHT][LEVEL_WIDTH];
+	unsigned char **levelData;
+	int mapWidth;
+	int mapHeight;
+
 	Entity* player;
 	//Entity* box;
 	vector<Entity*> staticObjects;
 
 	Mix_Music *music;
-	Mix_Chunk *someSound;
+	
 };

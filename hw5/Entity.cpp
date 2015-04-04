@@ -3,19 +3,19 @@
 #include "common.h"
 
 
-#define YGRAVITY 1.0f //2.5
+#define YGRAVITY 2.9f //2.5
 #define X_FRIC 0.7f
 
-#define JUMP_SPEED .4f //1.4
-#define MAX_SPEED 0.8f
+#define JUMP_SPEED 1.4f //1.4
+#define MAX_SPEED 0.9f
 
-#define INPUT_ACCEL 2.0f
+#define INPUT_ACCEL 3.0f
 #define JUMP_ACCEL 0.9f
 
 bool isSolid(int index){
 	//all but 12 are solid
 	
-	if ((int)index = 12){ 
+	if ((int)index == 12){ 
 		//printf("TWELVE"); 
 		return false; }
 	//printf("%i", index);
@@ -37,6 +37,8 @@ Entity::Entity(float x, float y, float xr, float yr, float colorR, float colorG,
 	//destructale
 	eventTime = -50.0f;
 	eventSequence = false;
+
+
 
 	if (isStatic){
 		xPos = initXpos;
@@ -109,21 +111,20 @@ void Entity::jump(){
 	if (collidedBottom) {
 		yVel = JUMP_SPEED;
 		collidedBottom = false;
+		Mix_PlayChannel(1, jumpSound, 0);
+
 	}
 	else if (collidedLeft){
 		yVel = 0.86f * JUMP_SPEED;
 		xVel = 0.5f * JUMP_SPEED;
 		collidedLeft = false;
+		Mix_PlayChannel(1, jumpSound, 0);
 	}
 	else if (collidedRight){
 		yVel = 0.86f * JUMP_SPEED;
 		xVel = 0.5f * -JUMP_SPEED;
 		collidedRight = false;
-	}
-
-	else //testing only
-	{
-		yVel = JUMP_SPEED;
+		Mix_PlayChannel(1, jumpSound, 0);
 	}
 
 
@@ -131,10 +132,9 @@ void Entity::jump(){
 
 
 
-void Entity::FixedUpdate(vector<Entity*> &staticObjects, unsigned char level[][LEVEL_WIDTH], Entity* player){
+void Entity::FixedUpdate(unsigned char **level, int mapHeight, int mapWidth, Entity* player){
 	//static stuff here -> nothing?
 	if (isStatic) return;
-
 	//dynamic stuff 
 	//acceleration, gravity, friction etc.
 
@@ -190,11 +190,9 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, unsigned char level[][L
 	//repeat for all object
 	//then check x direcion
 
-	vector<Entity*>::iterator staticObj;
 	//yPos and collision/y-penetration
 	yPos += yVel * FIXED_TIMESTEP;
 
-	//use iterators???? yes!
 
 	//check bottom point
 	float worldBottom = yPos - yRad;
@@ -203,41 +201,79 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, unsigned char level[][L
 	
 	//printf("%i,%i: %i ", gridY, gridX, level[gridY][gridX]);
 
-	//bottom!
-	worldToTileCoordinates(xPos, yPos - yRad, &gridX, &gridY);
-	if (level[gridY][gridX] != 12) { 
-		//float pen = fabs(gridY*TILE_SIZE - (yPos - yRad)); //gridY*TILE_SIZE  is top of tile
-		yPos = -gridY*TILE_SIZE + yRad + 0.0000001f;
-		printf(" not twelze "); 
-		yVel = 0.0f;
-	
+	//bottom! (left corner)
+	worldToTileCoordinates(xPos - xRad*0.7f, yPos - yRad, &gridX, &gridY);
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			//float pen = fabs(gridY*TILE_SIZE - (yPos - yRad)); //gridY*TILE_SIZE  is top of tile
+			yPos = -gridY*TILE_SIZE + yRad + 0.0000001f;
+			printf(" bottom");
+			yVel = 0.0f;
+			collidedBottom = true;
+		}
 	}
 
-	//top!
-	worldToTileCoordinates(xPos, yPos + yRad, &gridX, &gridY);
-	if (level[gridY][gridX] != 12) {
-		printf(" not twelze ");
-		yVel = -0.90f;
-
+	//bottom! (right corner)
+	worldToTileCoordinates(xPos + xRad*0.7f, yPos - yRad, &gridX, &gridY);
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			//float pen = fabs(gridY*TILE_SIZE - (yPos - yRad)); //gridY*TILE_SIZE  is top of tile
+			yPos = -gridY*TILE_SIZE + yRad + 0.0000001f;
+			printf(" bottom");
+			yVel = 0.0f;
+			collidedBottom = true;
+		}
 	}
+
+	//top! (left corner)
+	worldToTileCoordinates(xPos - xRad*0.7f, yPos + yRad, &gridX, &gridY);
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			yPos = -(gridY + 1)*TILE_SIZE - yRad - 0.0000001f;
+			printf(" top ");
+			yVel = 0.0f;
+			//collidedTop = true;
+			Mix_PlayChannel(1, hitSound, 0);
+
+		}
+	}
+	//top! (right corner)
+	worldToTileCoordinates(xPos + xRad*0.7f, yPos + yRad, &gridX, &gridY);
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			yPos = -(gridY + 1)*TILE_SIZE - yRad - 0.0000001f;
+			printf(" top ");
+			yVel = 0.0f;
+			//collidedTop = true;
+			Mix_PlayChannel(1, hitSound, 0);
+
+		}
+	}
+
 
 
 	xPos += xVel * FIXED_TIMESTEP;
 
 	//left!
 	worldToTileCoordinates(xPos - xRad, yPos, &gridX, &gridY);
-	if (level[gridY][gridX] != 12) {
-		printf(" not twelze ");
-		xVel = 0.90f;
-
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			xPos = (gridX + 1)*TILE_SIZE + xRad + 0.0000001f;
+			printf(" left");
+			xVel = 0.0f;
+			collidedLeft = true;
+		}
 	}
 
 	//right!
 	worldToTileCoordinates(xPos + xRad, yPos, &gridX, &gridY);
-	if (level[gridY][gridX] != 12) {
-		printf(" not twelze ");
-		xVel = -0.90f;
-
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			xPos = gridX*TILE_SIZE - xRad - 0.0000001f;
+			printf(" right ");
+			xVel = 0.0f;
+			collidedRight = true;
+		}
 	}
 
 
@@ -250,7 +286,7 @@ void Entity::FixedUpdate(vector<Entity*> &staticObjects, unsigned char level[][L
 		}
 
 	//if fall below screen
-	if (yPos < -2.5f){
+	if (yPos < -200.5f){
 		ResetDynamic();
 		score = 0;
 	}
