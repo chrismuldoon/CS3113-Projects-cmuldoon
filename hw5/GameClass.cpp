@@ -299,18 +299,4 @@ bool GameClass::ReadTileMapEntityData(std::ifstream &stream) {
 	return true;
 }
 
-//void GameClass::BuildEntity(std::string &type, const float &xCoord, const float &yCoord) {
-//	if (type == "PlayerOne") { // create player one and player one's weapon
-//		playerOne = Entity(xCoord, yCoord, 98, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
-//		playerOneWeapon = Entity(xCoord, yCoord, 56, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
-//	}
-//	if (type == "PlayerTwo") { // create player two and player two's weapon
-//		playerTwo = Entity(xCoord, yCoord, 99, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
-//		playerTwoWeapon = Entity(xCoord, yCoord, 40, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
-//	}
-//	if (type == "MagicButton") { // create the magic button
-//		magicButtonX = xCoord;
-//		magicButtonY = yCoord;
-//		magicButton = Entity(xCoord, yCoord, 100, SHEET_SPRITE_COLUMNS, SHEET_SPRITE_ROWS, 0.5, spriteTexture);
-//	}
-//}
+
