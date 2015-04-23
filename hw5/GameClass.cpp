@@ -52,9 +52,12 @@ void GameClass::Init() {
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 	music = Mix_LoadMUS("murder.mp3");
 
-	player = new Entity(1.5f, -0.7f, 0.055f, 0.0625f);
+	player = new Entity(0.5f, -0.7f, 0.055f, 0.0625f);
+	player->sheet = spriteImg;
 	player->jumpSound = Mix_LoadWAV("smw_jump.wav");
 	player->hitSound = Mix_LoadWAV("smw_shell_ricochet.wav");
+	Mix_VolumeChunk((player->hitSound), 127);
+	Mix_VolumeChunk((player->jumpSound), 90);
 
 	
 
@@ -63,6 +66,8 @@ void GameClass::Init() {
 
 	//Mix_PlayChannel(-1, someSound, 0);
 	Mix_PlayMusic(music, -1);
+	Mix_VolumeMusic(55);
+
 
 }
 //defines for sprite sheet
@@ -121,7 +126,8 @@ GameClass::~GameClass() {
 	SDL_Quit();
 }
 void GameClass::Render() {
-	glClearColor(0.04f, 0.60f, 0.67f, 1.0f);
+	//glClearColor(0.04f, 0.60f, 0.67f, 1.0f);
+	glClearColor(0.04f, 0.30f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	// render stuff
 
@@ -129,11 +135,24 @@ void GameClass::Render() {
 	//DrawRectangle(0.0f, -0.2f, 0.2f, 0.2f);
 
 	//DrawSpriteSheetSprite(spriteImg, 80, 16, 8);
+	
+
+
 
 	//scrolling
 	glLoadIdentity();
+	//DrawSpriteSheetSprite(spriteImg, 80, 16, 8, 0.4f, 0.4f);
+
+
+	float transAmt = player->xPos*-1.0; //follow the player
+	//stay within bounds of level
+	if (transAmt > -1.33f) transAmt = -1.33f;
+	else if (transAmt < -mapWidth*TILE_SIZE + 1.33) transAmt = -mapWidth*TILE_SIZE + 1.33;
+	//wiggle room
+	
+
 	//glTranslatef(player->xPos*-1.0, player->yPos*-1.0, 0.0);
-	glTranslatef(player->xPos*-1.0, 1.0, 0.0);
+	glTranslatef(transAmt, 1.0, 0.0);
 
 	renderLevel();
 

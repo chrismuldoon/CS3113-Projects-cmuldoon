@@ -1,11 +1,11 @@
 #pragma once
 #include "common.h"
 
-void DrawSpriteSheetSprite(int spriteTexture, int index, int spriteCountX, int spriteCountY) {
+void DrawSpriteSheetSprite(int spriteTexture, int index, int spriteCountX, int spriteCountY, float x, float y, float r1, float r2) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, spriteTexture);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	//glLoadIdentity(); translatebefore calling
 	
 	// our regular sprite drawing
 	float u = (float)(((int)index) % spriteCountX) / (float)spriteCountX;
@@ -19,7 +19,12 @@ void DrawSpriteSheetSprite(int spriteTexture, int index, int spriteCountX, int s
 	};
 	// our regular sprite drawing
 
-	GLfloat quad[] = { -0.4f, 0.4f, -0.4f, -0.4f, 0.4f, -0.4f, 0.4f, 0.4f };
+	GLfloat quad[] = { (x - r1), (y + r2),
+		(x - r1), (y - r2),
+		(x + r1), (y - r2),
+		(x + r1), (y + r2) };
+
+	
 	glVertexPointer(2, GL_FLOAT, 0, quad);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	

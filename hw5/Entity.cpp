@@ -3,14 +3,14 @@
 #include "common.h"
 
 
-#define YGRAVITY 2.9f //2.5
+#define YGRAVITY 3.7f //2.5
 #define X_FRIC 0.7f
 
-#define JUMP_SPEED 1.4f //1.4
-#define MAX_SPEED 0.9f
+#define JUMP_SPEED 1.7f //1.4
+#define MAX_SPEED 1.0f
 
 #define INPUT_ACCEL 3.0f
-#define JUMP_ACCEL 0.9f
+#define JUMP_ACCEL 1.0f
 
 bool isSolid(int index){
 	//all but 12 are solid
@@ -103,7 +103,9 @@ void Entity::destroy(bool start){
 
 void Entity::Render(){
 	if (isVisable)
-		DrawRectangle(xPos, yPos, xRad, yRad);// , r, g, b);
+		//DrawRectangle(xPos, yPos, xRad, yRad);// , r, g, b);
+		DrawSpriteSheetSprite(sheet, 80, 16, 8, xPos, yPos, xRad, yRad);
+		
 }
 
 
@@ -114,18 +116,19 @@ void Entity::jump(){
 		Mix_PlayChannel(1, jumpSound, 0);
 
 	}
-	else if (collidedLeft){
-		yVel = 0.86f * JUMP_SPEED;
-		xVel = 0.5f * JUMP_SPEED;
-		collidedLeft = false;
-		Mix_PlayChannel(1, jumpSound, 0);
-	}
-	else if (collidedRight){
-		yVel = 0.86f * JUMP_SPEED;
-		xVel = 0.5f * -JUMP_SPEED;
-		collidedRight = false;
-		Mix_PlayChannel(1, jumpSound, 0);
-	}
+	//no wall jumps this time
+	//else if (collidedLeft){
+	//	yVel = 0.86f * JUMP_SPEED;
+	//	xVel = 0.5f * JUMP_SPEED;
+	//	collidedLeft = false;
+	//	Mix_PlayChannel(1, jumpSound, 0);
+	//}
+	//else if (collidedRight){
+	//	yVel = 0.86f * JUMP_SPEED;
+	//	xVel = 0.5f * -JUMP_SPEED;
+	//	collidedRight = false;
+	//	Mix_PlayChannel(1, jumpSound, 0);
+	//}
 
 
 }
@@ -233,7 +236,7 @@ void Entity::FixedUpdate(unsigned char **level, int mapHeight, int mapWidth, Ent
 			printf(" top ");
 			yVel = 0.0f;
 			//collidedTop = true;
-			Mix_PlayChannel(1, hitSound, 0);
+			Mix_PlayChannel(2, hitSound, 0);
 
 		}
 	}
@@ -245,7 +248,7 @@ void Entity::FixedUpdate(unsigned char **level, int mapHeight, int mapWidth, Ent
 			printf(" top ");
 			yVel = 0.0f;
 			//collidedTop = true;
-			Mix_PlayChannel(1, hitSound, 0);
+			Mix_PlayChannel(2, hitSound, 0);
 
 		}
 	}
@@ -255,7 +258,16 @@ void Entity::FixedUpdate(unsigned char **level, int mapHeight, int mapWidth, Ent
 	xPos += xVel * FIXED_TIMESTEP;
 
 	//left!
-	worldToTileCoordinates(xPos - xRad, yPos, &gridX, &gridY);
+	worldToTileCoordinates(xPos - xRad, yPos -yRad*0.7f, &gridX, &gridY);
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			xPos = (gridX + 1)*TILE_SIZE + xRad + 0.0000001f;
+			printf(" left");
+			xVel = 0.0f;
+			collidedLeft = true;
+		}
+	}
+	worldToTileCoordinates(xPos - xRad, yPos + yRad*0.7f, &gridX, &gridY);
 	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
 		if (level[gridY][gridX] != 12) {
 			xPos = (gridX + 1)*TILE_SIZE + xRad + 0.0000001f;
@@ -266,7 +278,16 @@ void Entity::FixedUpdate(unsigned char **level, int mapHeight, int mapWidth, Ent
 	}
 
 	//right!
-	worldToTileCoordinates(xPos + xRad, yPos, &gridX, &gridY);
+	worldToTileCoordinates(xPos + xRad, yPos - yRad*0.7f, &gridX, &gridY);
+	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
+		if (level[gridY][gridX] != 12) {
+			xPos = gridX*TILE_SIZE - xRad - 0.0000001f;
+			printf(" right ");
+			xVel = 0.0f;
+			collidedRight = true;
+		}
+	}
+	worldToTileCoordinates(xPos + xRad, yPos + yRad*0.7f, &gridX, &gridY);
 	if (gridY < mapHeight && gridX < mapWidth && gridY >= 0 && gridX >= 0){
 		if (level[gridY][gridX] != 12) {
 			xPos = gridX*TILE_SIZE - xRad - 0.0000001f;
@@ -286,7 +307,7 @@ void Entity::FixedUpdate(unsigned char **level, int mapHeight, int mapWidth, Ent
 		}
 
 	//if fall below screen
-	if (yPos < -200.5f){
+	if (yPos < -(mapHeight+3)*TILE_SIZE){
 		ResetDynamic();
 		score = 0;
 	}
@@ -324,6 +345,9 @@ void Entity::playerInput(){
 
 }
 
+
+
+
 bool Entity::collidesWith(Entity *entity){
 	if ((xPos + xRad ) > (entity->xPos - entity->xRad) &&
 		(xPos - xRad ) < (entity->xPos + entity->xRad) &&
@@ -341,3 +365,6 @@ void worldToTileCoordinates(float worldX, float worldY, int *gridX, int *gridY) 
 	*gridX = (int)((worldX + (WORLD_OFFSET_X)) / TILE_SIZE);
 	*gridY = (int)((-worldY + (WORLD_OFFSET_Y)) / TILE_SIZE);
 }
+
+
+

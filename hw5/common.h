@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void DrawSpriteSheetSprite(int spriteTexture, int index, int spriteCountX, int spriteCountY);
+void DrawSpriteSheetSprite(int spriteTexture, int index, int spriteCountX, int spriteCountY, float x, float y, float r1, float r2);
 
 void DrawRectangle(float x, float y, float r1, float r2);
 

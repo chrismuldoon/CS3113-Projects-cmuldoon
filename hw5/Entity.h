@@ -4,6 +4,9 @@
 #include <vector>
 
 #include <SDL_mixer.h>
+#include <SDL.h>
+#include <SDL_opengl.h>
+#include <SDL_image.h>
 
 using namespace std;
 
@@ -17,6 +20,7 @@ public:
 	void jump();
 	void ResetDynamic();
 	void playerInput();
+
 
 	void destroy(bool start);
 	float eventTime;
@@ -58,6 +62,7 @@ public:
 
 	Mix_Chunk *jumpSound;
 	Mix_Chunk *hitSound;
+	GLuint sheet;
 };
 
 float lerp(float v0, float v1, float t);
