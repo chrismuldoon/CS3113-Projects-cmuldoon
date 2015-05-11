@@ -1,9 +1,6 @@
 
 #include "Matrix.h"
 
-/*
-Begin Vector Class
-*/
 
 Vector::Vector() : x(1.0), y(1.0), z(1.0) { Normalize(); }
 Vector::Vector(const float &x, const float &y, const float &z) : x(x), y(y), z(z) {}
@@ -15,13 +12,6 @@ void Vector::Normalize() {
 	z = z / l;
 }
 
-/*
-End Vector Class
-*/
-
-/*
-Begin Matrix Class
-*/
 
 Matrix::Matrix() { GenerateIdentity(); }
 
